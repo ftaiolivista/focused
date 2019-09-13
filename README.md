@@ -1,3 +1,9 @@
+# About the Fork
+
+- Replaced Ramda style currying with the more clear Santuary.js
+- Possibility to set _undefined_ to properties
+- Compose use explicit array like Santuary.js pipe
+
 
 # focused
 
