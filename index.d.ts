@@ -41,34 +41,26 @@ export interface Getter<S, A> {
 
 export interface Iso<S, T, A, B> {
   "~~type~~": "Getting" & "Iso" & "Lens" & "Traversal";
-  "~~apply~~": (<FB, FT>(F: Functor<B, T, FB, FT>, f: Fn<A, FB>, s: S) => FT);
+  "~~apply~~": <FB, FT>(F: Functor<B, T, FB, FT>, f: Fn<A, FB>, s: S) => FT;
   from: (s: S) => A;
   to: (b: B) => T;
 }
 
 export interface Prism<S, T, A, B> {
   "~~type~~": "Getting" & "Prism" & "Traversal";
-  "~~apply~~": (<FB, FT>(
-    F: Applicative<B, T, FB, FT>,
-    f: Fn<A, FB>,
-    s: S
-  ) => FT);
+  "~~apply~~": <FB, FT>(F: Applicative<B, T, FB, FT>, f: Fn<A, FB>, s: S) => FT;
   match: (s: S) => Either<T, A>;
   build: (b: B) => T;
 }
 
 export interface Lens<S, T, A, B> {
   "~~type~~": "Getting" & "Lens" & "Traversal";
-  "~~apply~~": (<FB, FT>(F: Functor<B, T, FB, FT>, f: Fn<A, FB>, s: S) => FT);
+  "~~apply~~": <FB, FT>(F: Functor<B, T, FB, FT>, f: Fn<A, FB>, s: S) => FT;
 }
 
 export interface Traversal<S, T, A, B> {
   "~~type~~": "Getting" & "Traversal";
-  "~~apply~~": (<FB, FT>(
-    F: Applicative<B, T, FB, FT>,
-    f: Fn<A, FB>,
-    s: S
-  ) => FT);
+  "~~apply~~": <FB, FT>(F: Applicative<B, T, FB, FT>, f: Fn<A, FB>, s: S) => FT;
 }
 
 // Monomorphic version
@@ -79,133 +71,106 @@ export type SimpleTraversal<S, A> = Traversal<S, S, A, A>;
 
 // arity 2
 export function compose<S, T, A, B, C, D>(
-  parent: Iso<S, T, A, B>,
-  child: Iso<A, B, C, D>
+  a: [Iso<S, T, A, B>, Iso<A, B, C, D>]
 ): Iso<S, T, C, D>;
 export function compose<S, T, A, B, C, D>(
-  parent: Prism<S, T, A, B>,
-  child: Prism<A, B, C, D>
+  a: [Prism<S, T, A, B>, Prism<A, B, C, D>]
 ): Prism<S, T, C, D>;
 export function compose<S, T, A, B, C, D>(
-  parent: Lens<S, T, A, B>,
-  child: Lens<A, B, C, D>
+  a: [Lens<S, T, A, B>, Lens<A, B, C, D>]
 ): Lens<S, T, C, D>;
 export function compose<S, T, A, B, C, D>(
-  parent: Traversal<S, T, A, B>,
-  child: Traversal<A, B, C, D>
+  a: [Traversal<S, T, A, B>, Traversal<A, B, C, D>]
 ): Traversal<S, T, C, D>;
-export function compose<S, A, B>(
-  parent: Getter<S, A>,
-  child: Getter<A, B>
-): Getter<S, B>;
+export function compose<S, A, B>(a: [Getter<S, A>, Getter<A, B>]): Getter<S, B>;
 // arity 3
 export function compose<S, T, A, B, C, D, E, F>(
-  parent: Iso<S, T, A, B>,
-  child1: Iso<A, B, C, D>,
-  child2: Iso<C, D, E, F>
+  a: [Iso<S, T, A, B>, Iso<A, B, C, D>, Iso<C, D, E, F>]
 ): Iso<S, T, E, F>;
 export function compose<S, T, A, B, C, D, E, F>(
-  parent: Prism<S, T, A, B>,
-  child1: Prism<A, B, C, D>,
-  child2: Prism<C, D, E, F>
+  a: [Prism<S, T, A, B>, Prism<A, B, C, D>, Prism<C, D, E, F>]
 ): Prism<S, T, E, F>;
 export function compose<S, T, A, B, C, D, E, F>(
-  parent: Traversal<S, T, A, B>,
-  child1: Traversal<A, B, C, D>,
-  child2: Traversal<C, D, E, F>
+  a: [Traversal<S, T, A, B>, Traversal<A, B, C, D>, Traversal<C, D, E, F>]
 ): Traversal<S, T, E, F>;
 export function compose<S, A, B, C>(
-  parent: Getter<S, A>,
-  child1: Getter<A, B>,
-  child2: Getter<B, C>
+  a: [Getter<S, A>, Getter<A, B>, Getter<B, C>]
 ): Getter<S, C>;
 // arity 4
 export function compose<S, T, A, B, C, D, E, F, G, H>(
-  parent: Iso<S, T, A, B>,
-  child1: Iso<A, B, C, D>,
-  child2: Iso<C, D, E, F>,
-  child3: Iso<E, F, G, H>
+  a: [Iso<S, T, A, B>, Iso<A, B, C, D>, Iso<C, D, E, F>, Iso<E, F, G, H>]
 ): Iso<S, T, G, H>;
 export function compose<S, T, A, B, C, D, E, F, G, H>(
-  parent: Prism<S, T, A, B>,
-  child1: Prism<A, B, C, D>,
-  child2: Prism<C, D, E, F>,
-  child3: Prism<E, F, G, H>
+  a: [
+    Prism<S, T, A, B>,
+    Prism<A, B, C, D>,
+    Prism<C, D, E, F>,
+    Prism<E, F, G, H>
+  ]
 ): Prism<S, T, G, H>;
 export function compose<S, T, A, B, C, D, E, F, G, H>(
-  parent: Lens<S, T, A, B>,
-  child1: Lens<A, B, C, D>,
-  child2: Lens<C, D, E, F>,
-  child3: Lens<E, F, G, H>
+  a: [Lens<S, T, A, B>, Lens<A, B, C, D>, Lens<C, D, E, F>, Lens<E, F, G, H>]
 ): Lens<S, T, G, H>;
 export function compose<S, T, A, B, C, D, E, F, G, H>(
-  parent: Traversal<S, T, A, B>,
-  child1: Traversal<A, B, C, D>,
-  child2: Traversal<C, D, E, F>,
-  child3: Traversal<E, F, G, H>
+  a: [
+    Traversal<S, T, A, B>,
+    Traversal<A, B, C, D>,
+    Traversal<C, D, E, F>,
+    Traversal<E, F, G, H>
+  ]
 ): Traversal<S, T, G, H>;
 export function compose<S, A, B, C, D>(
-  parent: Getter<S, A>,
-  child1: Getter<A, B>,
-  child2: Getter<B, C>,
-  child3: Getter<C, D>
+  a: [Getter<S, A>, Getter<A, B>, Getter<B, C>, Getter<C, D>]
 ): Getter<S, D>;
 // arity 5
 export function compose<S, T, A, B, C, D, E, F, G, H, I, J>(
-  parent: Iso<S, T, A, B>,
-  child1: Iso<A, B, C, D>,
-  child2: Iso<C, D, E, F>,
-  child3: Iso<E, F, G, H>,
-  child4: Iso<G, H, I, J>
+  a: [
+    Iso<S, T, A, B>,
+    Iso<A, B, C, D>,
+    Iso<C, D, E, F>,
+    Iso<E, F, G, H>,
+    Iso<G, H, I, J>
+  ]
 ): Iso<S, T, I, J>;
 export function compose<S, T, A, B, C, D, E, F, G, H, I, J>(
-  parent: Prism<S, T, A, B>,
-  child1: Prism<A, B, C, D>,
-  child2: Prism<C, D, E, F>,
-  child3: Prism<E, F, G, H>,
-  child4: Prism<G, H, I, J>
+  a: [
+    Prism<S, T, A, B>,
+    Prism<A, B, C, D>,
+    Prism<C, D, E, F>,
+    Prism<E, F, G, H>,
+    Prism<G, H, I, J>
+  ]
 ): Prism<S, T, I, J>;
 export function compose<S, T, A, B, C, D, E, F, G, H, I, J>(
-  parent: Lens<S, T, A, B>,
-  child1: Lens<A, B, C, D>,
-  child2: Lens<C, D, E, F>,
-  child3: Lens<E, F, G, H>,
-  child4: Lens<G, H, I, J>
+  a: [
+    Lens<S, T, A, B>,
+    Lens<A, B, C, D>,
+    Lens<C, D, E, F>,
+    Lens<E, F, G, H>,
+    Lens<G, H, I, J>
+  ]
 ): Lens<S, T, I, J>;
 export function compose<S, T, A, B, C, D, E, F, G, H, I, J>(
-  parent: Traversal<S, T, A, B>,
-  child1: Traversal<A, B, C, D>,
-  child2: Traversal<C, D, E, F>,
-  child3: Traversal<E, F, G, H>,
-  child4: Traversal<G, H, I, J>
+  a: [
+    Traversal<S, T, A, B>,
+    Traversal<A, B, C, D>,
+    Traversal<C, D, E, F>,
+    Traversal<E, F, G, H>,
+    Traversal<G, H, I, J>
+  ]
 ): Traversal<S, T, I, J>;
 export function compose<S, A, B, C, D, E>(
-  parent: Getter<S, A>,
-  child1: Getter<A, B>,
-  child2: Getter<B, C>,
-  child3: Getter<C, D>,
-  child4: Getter<D, E>
+  a: [Getter<S, A>, Getter<A, B>, Getter<B, C>, Getter<C, D>, Getter<D, E>]
 ): Getter<S, E>;
 // for higher arities you can use _.$().$()... of nest compose calls
 
-export function over<S, T, A, B>(
-  optic: Traversal<S, T, A, B>,
-  updater: (a: A) => B,
-  state: S
-): T;
+export const over: <S, T, A, B>(
+  optic: Traversal<S, T, A, B>
+) => (updater: (a: A) => B) => (state: S) => T;
 
-export function set<S, T, A, B>(
-  optic: Traversal<S, T, A, B>,
-  value: B,
-  state: S
-): T;
+export const view: <S, A>(optic: Getting<A, S, A>) => (state: S) => A
 
-export function view<S, A>(optic: Getting<A, S, A>, state: S): A;
-
-export function preview<S, A>(
-  optic: Getting<A | null, S, A>,
-  state: S
-): A | null;
+export const preview: <S, A>(optic: Getting<A | null, S, A>) => (state: S) => A | null
 
 export function has<S, A>(optic: Getting<boolean, S, A>, state: S): boolean;
 

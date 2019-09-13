@@ -244,3 +244,15 @@ test("removeAt", assert => {
   });
   assert.end();
 });
+
+test("proxy/setter", assert => {
+  assert.deepEqual(_.nakama[0].name._("Jimbi")(state), {
+    ...state,
+    nakama: state.nakama.map((n, i) => (i === 0 ? { ...n, name: "Jimbi" } : n))
+  });
+  assert.deepEqual(_.nakama[0].name._("Jimbi")(state), {
+    ...state,
+    nakama: state.nakama.map((n, i) => (i === 0 ? { ...n, name: "Jimbi" } : n))
+  });
+  assert.end();
+});
