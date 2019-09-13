@@ -76,12 +76,9 @@ test("view/atProp", assert => {
   );
 
   assert.deepEqual(
-    set(
-      compose(
-        atProp("navigator"),
-        atProp("name")
-      )
-    )("Nami")({ name: "Luffy" }),
+    set(compose([atProp("navigator"), atProp("name")]))("Nami")({
+      name: "Luffy"
+    }),
     {
       name: "Luffy",
       navigator: { name: "Nami" }
@@ -135,7 +132,9 @@ test("set/[0]", assert => {
 test("set/undefined", assert => {
   assert.deepEqual(set(_.nakama[0].name)(undefined)(state), {
     ...state,
-    nakama: state.nakama.map((n, i) => (i === 0 ? { ...n, name: undefined} : n))
+    nakama: state.nakama.map((n, i) =>
+      i === 0 ? { ...n, name: undefined } : n
+    )
   });
   assert.end();
 });

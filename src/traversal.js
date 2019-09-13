@@ -46,15 +46,7 @@ export function maybeProp(name) {
 }
 
 // eachValue :: SimpleTraversal<Map<K,V>, V>
-export const eachMapValue = compose(
-  mapEntries,
-  each,
-  index(1)
-);
+export const eachMapValue = compose([mapEntries, each, index(1)]);
 
 // eachKey :: SimpleTraversal<Map<K,V>, K>
-export const eachMapKey = compose(
-  mapEntries,
-  each,
-  index(0)
-);
+export const eachMapKey = compose([mapEntries, each, index(0)]);

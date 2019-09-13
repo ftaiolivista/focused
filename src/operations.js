@@ -73,6 +73,6 @@ export function compose2(parent, child) {
   };
 }
 
-export function compose(...ls) {
+export function compose(ls) {
   return ls.reduce(compose2);
 }
