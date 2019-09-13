@@ -33,22 +33,22 @@ const state = {
 const _ = lensProxy();
 
 test("view/prop", assert => {
-  assert.equal(view(_.name, state), "Luffy");
+  assert.equal(view(_.name)(state), "Luffy");
   assert.end();
 });
 
 test("preview/maybeProp", assert => {
-  assert.deepEqual(preview(_.$lastname.level, state), null);
+  assert.deepEqual(preview(_.$lastname.level)(state), null);
   assert.end();
 });
 
 test("over/maybeProp", assert => {
-  assert.deepEqual(over(_.$assitant.$level, x => x * 2, state), state);
+  assert.deepEqual(over(_.$assitant.$level)(x => x * 2)(state), state);
   assert.end();
 });
 
 test("over/prop", assert => {
-  assert.deepEqual(over(_.level, x => x * 2, state), {
+  assert.deepEqual(over(_.level)(x => x * 2)(state), {
     ...state,
     level: state.level * 2
   });
@@ -57,7 +57,7 @@ test("over/prop", assert => {
 
 test("view/atProp", assert => {
   assert.equal(
-    view(atProp("surname"), { name: "Luffy" }),
+    view(atProp("surname"))({ name: "Luffy" }),
     null,
     "should return null if property is absent"
   );
@@ -67,7 +67,7 @@ test("view/atProp", assert => {
 
 test("view/atProp", assert => {
   assert.deepEqual(
-    set(atProp("surname"), "Monkey D.", { name: "Luffy" }),
+    set(atProp("surname"))("Monkey D.")({ name: "Luffy" }),
     {
       name: "Luffy",
       surname: "Monkey D."
@@ -80,10 +80,8 @@ test("view/atProp", assert => {
       compose(
         atProp("navigator"),
         atProp("name")
-      ),
-      "Nami",
-      { name: "Luffy" }
-    ),
+      )
+    )("Nami")({ name: "Luffy" }),
     {
       name: "Luffy",
       navigator: { name: "Nami" }
@@ -99,7 +97,7 @@ test("view/atProp", assert => {
 
 test("toList/each", assert => {
   assert.deepEqual(
-    toList(_.nakama.$(each).name, state),
+    toList(_.nakama.$(each).name)(state),
     state.nakama.map(n => n.name)
   );
   assert.end();
@@ -107,7 +105,7 @@ test("toList/each", assert => {
 
 test("toList/filtered", assert => {
   assert.deepEqual(
-    toList(_.nakama.$(filtered(x => x.level > 2)).name, state),
+    toList(_.nakama.$(filtered(x => x.level > 2)).name)(state),
     state.nakama.filter(n => n.level > 2).map(n => n.name)
   );
   assert.end();
@@ -115,7 +113,7 @@ test("toList/filtered", assert => {
 
 test("over/filtered", assert => {
   assert.deepEqual(
-    over(_.nakama.$(filtered(x => x.level > 2)).name, s => `**${s}**`, state),
+    over(_.nakama.$(filtered(x => x.level > 2)).name)(s => `**${s}**`)(state),
     {
       ...state,
       nakama: state.nakama.map(n =>
@@ -127,9 +125,17 @@ test("over/filtered", assert => {
 });
 
 test("set/[0]", assert => {
-  assert.deepEqual(set(_.nakama[0].name, "Jimbi", state), {
+  assert.deepEqual(set(_.nakama[0].name)("Jimbi")(state), {
     ...state,
     nakama: state.nakama.map((n, i) => (i === 0 ? { ...n, name: "Jimbi" } : n))
+  });
+  assert.end();
+});
+
+test("set/undefined", assert => {
+  assert.deepEqual(set(_.nakama[0].name)(undefined)(state), {
+    ...state,
+    nakama: state.nakama.map((n, i) => (i === 0 ? { ...n, name: undefined} : n))
   });
   assert.end();
 });
@@ -139,21 +145,21 @@ test("iso/anon", assert => {
   // source is either null or a negative number
   // target is any number
   const negative = anon(0, x => x >= 0);
-  assert.equal(view(negative, -10), -10);
-  assert.equal(view(negative, null), 0);
+  assert.equal(view(negative)(-10), -10);
+  assert.equal(view(negative)(null), 0);
 
   assert.equal(
-    set(negative, -3, -10),
+    set(negative)(-3)(-10),
     -3,
     "should allow setting to negative numbers"
   );
   assert.equal(
-    set(negative, -3, null),
+    set(negative)(-3)(null),
     -3,
     "should allow setting on null values"
   );
   assert.equal(
-    set(negative, 10, -3),
+    set(negative)(10)(-3),
     null,
     "should not allow setting non-negative numbers"
   );
@@ -184,11 +190,9 @@ const semver = iso(
 );
 
 test("over/iso", assert => {
-  const actualJSON = over(
-    _.$(json).dependencies.mydep.$(semver).minor,
-    x => x + 1,
-    jsonObj
-  );
+  const actualJSON = over(_.$(json).dependencies.mydep.$(semver).minor)(
+    x => x + 1
+  )(jsonObj);
   const js = JSON.parse(jsonObj);
   js.dependencies.mydep = "6.1.0";
 
@@ -200,14 +204,14 @@ test("over/prism", assert => {
   const badJSonObj = "@#" + jsonObj;
 
   assert.equal(
-    set(_.$(maybeJson).dependencies.mydep, "6.1.0", badJSonObj),
+    set(_.$(maybeJson).dependencies.mydep)("6.1.0")(badJSonObj),
     badJSonObj
   );
   assert.end();
 });
 
 test("append", assert => {
-  assert.deepEqual(append(_.nakama, { name: "Nami", level: 1 }, state), {
+  assert.deepEqual(append(_.nakama)({ name: "Nami", level: 1 })(state), {
     ...state,
     nakama: state.nakama.concat({ name: "Nami", level: 1 })
   });
@@ -215,7 +219,7 @@ test("append", assert => {
 });
 
 test("insertAt", assert => {
-  assert.deepEqual(insertAt(_.nakama, 1, { name: "Nami", level: 1 }, state), {
+  assert.deepEqual(insertAt(_.nakama)(1)({ name: "Nami", level: 1 })(state), {
     ...state,
     nakama: [
       state.nakama[0],
@@ -227,7 +231,7 @@ test("insertAt", assert => {
 });
 
 test("removeIf", assert => {
-  assert.deepEqual(removeIf(_.nakama, n => n.level > 2, state), {
+  assert.deepEqual(removeIf(_.nakama)(n => n.level > 2)(state), {
     ...state,
     nakama: state.nakama.filter(n => n.level <= 2)
   });
@@ -235,7 +239,7 @@ test("removeIf", assert => {
 });
 
 test("removeAt", assert => {
-  assert.deepEqual(removeAt(_.nakama, 2, state), {
+  assert.deepEqual(removeAt(_.nakama)(2)(state), {
     ...state,
     nakama: state.nakama.filter((_, i) => i !== 2)
   });
