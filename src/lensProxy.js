@@ -1,6 +1,6 @@
 import { prop, index } from "./lens";
 import { maybeProp } from "./traversal";
-import { compose2, set } from "./operations";
+import { compose2, set, over } from "./operations";
 
 // idLens : SimpleLens<S,S>
 export function idLens(_, f, s) {
@@ -52,9 +52,19 @@ function setOrCreateSetter(memo, getter) {
   return l;
 }
 
+function overOrCreateSetter(memo, getter) {
+  let l = memo.get(getter);
+  if (l == null) {
+    l = over(getter);
+    memo.over(getter, l);
+  }
+  return l;
+}
+
 export function lensProxy(parent = idLens) {
   const memo = new Map();
   const setterMemo = new Map();
+  const overMemo = new Map();
   return new Proxy(() => {}, {
     get(target, key) {
       if (key === "$") {
@@ -64,6 +74,9 @@ export function lensProxy(parent = idLens) {
       }
       if (key === "_") {
         return setOrCreateSetter(setterMemo, parent);
+      }
+      if (key === "ø") {
+        return overOrCreateSetter(overMemo, parent);
       }
       return getOrCreateLens(memo, parent, key);
     },
