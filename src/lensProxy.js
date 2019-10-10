@@ -56,7 +56,7 @@ function overOrCreateSetter(memo, getter) {
   let l = memo.get(getter);
   if (l == null) {
     l = over(getter);
-    memo.over(getter, l);
+    memo.set(getter, l);
   }
   return l;
 }
