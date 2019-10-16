@@ -34,7 +34,7 @@ export function filtered(pred, traverse = each) {
 // This is an Affine Traversal; ie focus on 0 or 1 value
 export function maybeProp(name) {
   return function propTraversal(anApplicative, f, s) {
-    if (!s.hasOwnProperty(name)) {
+    if (!s || !s.hasOwnProperty(name)) {
       return anApplicative.pure(s);
     }
     return anApplicative.map(a2 => {

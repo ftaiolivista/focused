@@ -27,7 +27,8 @@ const state = {
     { name: "Zorro", level: 3 },
     { name: "Sanji", level: 3 },
     { name: "Chooper", level: 2 }
-  ]
+  ],
+  empty: null
 };
 
 const _ = lensProxy();
@@ -39,6 +40,11 @@ test("view/prop", assert => {
 
 test("preview/maybeProp", assert => {
   assert.deepEqual(preview(_.$lastname.level)(state), null);
+  assert.end();
+});
+
+test("preview/maybeProp2", assert => {
+  assert.deepEqual(preview(_.$empty.$level)(state), null);
   assert.end();
 });
 
